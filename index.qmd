@@ -1,5 +1,7 @@
 ---
-title: "state Incentives Map"
+title: "State Incentives Map"
+subtitle: Rebecca Lester, Stanford Graduate School of Business
+description: Click on a highlighted state to view its incentive programs and disclosure regimes.
 title-block-banner: "#15235b"
 title-block-banner-color: white
 ---
@@ -184,6 +186,7 @@ viewof row = Inputs.table(reg_search, {
     "disclosure_law",
   ],
   header: {
+    state: "State",
     year: "Year",
     direction: "",
     disclosure_law: "Disclosure law",
