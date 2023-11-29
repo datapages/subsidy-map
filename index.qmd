@@ -1,20 +1,41 @@
 ---
-title: "State Incentives Map"
+title: "state Incentives Map"
 title-block-banner: "#15235b"
 title-block-banner-color: white
 ---
 
+```{r}
+library(dplyr)
+dataset <- redivis::user("stanford_templates")$dataset("subsidy_map")
+regime_table <- dataset$table("state_disclosure_regimes")$to_tibble()
+
+regime_data <- regime_table |> rename_with(tolower) |> select(
+  state,
+  year = year_of_disclosure_law,
+  program = specific_subsidy_program_affected_by_law____means_update_to_,
+  disclosure_law,
+  state_statute,
+  excerpt,
+  sample = subsidies_in_sample___y_n_,
+  internal = internal_disclosure___y_n_,
+  external = external_disclosure___y_n_
+)
+ojs_define(regime_data)
+```
+
 ```{ojs}
 Plot = import("https://esm.sh/@observablehq/plot")
 
-redivis = require("redivis")
-reg = await redivis
- .user("stanford_templates")
- .dataset("subsidy_map")
- .table("state_disclosure_regimes")
- .listRows()
+//redivis = require("redivis")
+//reg = await redivis
+// .user("stanford_templates")
+// .dataset("subsidy_map")
+// .table("state_disclosure_regimes")
+// .listRows()
 
 //reg = FileAttachment("regimes.csv").csv()
+
+reg = transpose(regime_data)
 
 dir = (int, ext) => (
   [int === "Y" ? "internal" : "", ext === "Y" ? "external" : ""].filter(Boolean)
@@ -22,9 +43,8 @@ dir = (int, ext) => (
 
 regimes = reg.map(obj => ({
   ...obj,
-  Year_of_Disclosure_Law: obj.Year_of_Disclosure_Law.toString(),
-  year: new Date(obj.Year_of_Disclosure_Law, 0, 1),
-  direction: dir(obj.Internal_Disclosure___Y_N_, obj.External_Disclosure___Y_N_)
+  year: new Date(obj.year.toString(), 0, 1),
+  direction: dir(obj.internal, obj.external)
 }));
 
 // map
@@ -102,7 +122,7 @@ abbr = FileAttachment("states-abbr.json").json() // state names + abbreviations
 states = new Map(us.objects.states.geometries.map(
   d => [d.id, {"name": d.properties.name,
                "abbr": abbr[d.properties.name],
-               "included": regimes.map(d => d.State).includes(d.properties.name)}])
+               "included": regimes.map(d => d.state).includes(d.properties.name)}])
 )
 
 path = d3.geoPath()
@@ -116,7 +136,7 @@ state_name = state_obj ? state_obj["name"] : null
 // all regimes with selected state variable
 reg_state = regimes.map(obj => ({
   ...obj,
-  curr_state: state_name ? obj.State === state_name : true
+  curr_state: state_name ? obj.state === state_name : true
 }));
 
 // only regimes for selected state
@@ -154,31 +174,22 @@ viewof reg_search = Inputs.search(reg_curr)
 // table
 viewof row = Inputs.table(reg_search, {
   rows: 100, // rows displayed at start
-  sort: "Year_of_Disclosure_Law", reverse: true, // reverse chronological order
+  sort: "year", reverse: true, // reverse chronological order
   multiple: false, // only select one row at a time
   required: false, // if nothing is selected, selection is empty
   columns: [
-    "State",
-    "Year_of_Disclosure_Law",
-    //"Specific_Subsidy_Program_Affected_by_Law____Means_Update_to_",
+    "state",
+    "year",
     "direction",
-    "Disclosure_Law",
-    //"State_Statute",
-    //"Subsidies_in_Sample___Y_N_",
-    //"Internal_Disclosure___Y_N_",
-    //"External_Disclosure___Y_N_"
+    "disclosure_law",
   ],
   header: {
-    Year_of_Disclosure_Law: "Year",
-    //Specific_Subsidy_Program_Affected_by_Law____Means_Update_to_: "Subsidy program affected",
+    year: "Year",
     direction: "",
-    Disclosure_Law: "Disclosure law",
-    //State_Statute: "State statute",
-    //Subsidies_in_Sample___Y_N_: "Subsidies in sample?",
-    //Internal_Disclosure___Y_N_: "Internal?",
-    //External_Disclosure___Y_N_: "External?"
+    disclosure_law: "Disclosure law",
   },
   format: {
+    year: x => x.getFullYear(),
     direction: badgify
   }
 })
@@ -192,13 +203,14 @@ badgify = x => htl.html`<div>
 ```{ojs}
 // sidebar
 function pullout(head, text) {
-  return html`<b>${head}</b><p>${text}</p>`
+  return htl.html.fragment`<b>${head}</b><p>${text}</p>`
 }
 
-pullouts = row ? htl.html.fragment`${program} ${statute} ${excerpt}` : htl.html.fragment`<p class="pullout"><i>Select a row to see more information...</i></p>`
+placeholder = htl.html.fragment`<p class="pullout"><i>Select a row to see more information...</i></p>`
+viewof pullouts = row ? htl.html.fragment`${pullout("Subsidy program affected", row.program)} ${pullout("State statute", row.state_statute)} ${pullout("Excerpt", row.excerpt)}` : placeholder
 
 htl.html`<div class="grid-container">
  <div> ${viewof row} </div>
- <div class="pullout"> ${pullouts} </div>
+ <div class="pullout"> ${viewof pullouts} </div>
 </div>`
 ```
