@@ -25,7 +25,9 @@ regime_data <- regime_table |> rename_with(tolower) |> select(
   external = external_disclosure___y_n_
 ) |>
   mutate(across(everything(), \(s) s |>
+                  str_trim() |>
                   str_replace_all("¬ß", "§") |>
+                  str_replace_all("¬∑", "·") |>
                   str_replace_all("‚Ä[ôò]", "'") |>
                   str_replace_all("‚Ä[úù]", "'") |>
                   str_replace_all("‚Ä[îì]", "–") |>
