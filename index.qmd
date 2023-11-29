@@ -8,6 +8,8 @@ title-block-banner-color: white
 
 ```{r}
 library(dplyr)
+library(stringr)
+
 dataset <- redivis::user("stanford_templates")$dataset("subsidy_map")
 regime_table <- dataset$table("state_disclosure_regimes")$to_tibble()
 
@@ -21,7 +23,14 @@ regime_data <- regime_table |> rename_with(tolower) |> select(
   sample = subsidies_in_sample___y_n_,
   internal = internal_disclosure___y_n_,
   external = external_disclosure___y_n_
-)
+) |>
+  mutate(across(everything(), \(s) s |>
+                  str_replace_all("¬ß", "§") |>
+                  str_replace_all("‚Ä[ôò]", "'") |>
+                  str_replace_all("‚Ä[úù]", "'") |>
+                  str_replace_all("‚Ä[îì]", "–") |>
+                  str_replace_all("‚Ä[Çâ]", " ") |>
+                  str_replace_all("‚Ä¶", "...")))
 ojs_define(regime_data)
 ```
 
@@ -205,9 +214,7 @@ badgify = x => htl.html`<div>
 
 ```{ojs}
 // sidebar
-function pullout(head, text) {
-  return htl.html.fragment`<b>${head}</b><p>${text}</p>`
-}
+pullout = (head, text) => htl.html.fragment`<b>${head}</b><p>${text}</p>`
 
 placeholder = htl.html.fragment`<p class="pullout"><i>Select a row to see more information...</i></p>`
 viewof pullouts = row ? htl.html.fragment`${pullout("Subsidy program affected", row.program)} ${pullout("State statute", row.state_statute)} ${pullout("Excerpt", row.excerpt)}` : placeholder
