@@ -30,7 +30,8 @@ regime_data <- regime_table |> rename_with(tolower) |> select(
                   str_replace_all("‚Ä[úù]", "'") |>
                   str_replace_all("‚Ä[îì]", "–") |>
                   str_replace_all("‚Ä[Çâ]", " ") |>
-                  str_replace_all("‚Ä¶", "...")))
+                  str_replace_all("‚Ä¶", "..."))) |>
+  arrange(desc(year), state)
 ojs_define(regime_data)
 ```
 
@@ -185,7 +186,7 @@ viewof reg_search = Inputs.search(reg_curr)
 // table
 viewof row = Inputs.table(reg_search, {
   rows: 100, // rows displayed at start
-  sort: "year", reverse: true, // reverse chronological order
+  // sort: "year", reverse: true, // reverse chronological order
   multiple: false, // only select one row at a time
   required: false, // if nothing is selected, selection is empty
   columns: [
