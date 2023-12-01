@@ -4,6 +4,15 @@ project:
 website:
   title: "Subsidy Map"
   navbar: false
+  page-footer:
+    background: light
+    left: |
+      [This website](https://github.com/langcog/subsidy-map) is made using [Quarto](https://quarto.org/), with interactive visualizations in [Observable](https://observablehq.com/), and hosted on [GitHub pages](https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages). The data are stored on [Redivis](https://redivis.com/datasets/d351-bqdd6sbat).<br>
+      The dataset was created by [Rebecca Lester](https://www.beckylesteracctg.com/) (Stanford Graduate School of Education Business). This website was made in collaboration with [Mike Frank](http://web.stanford.edu/~mcfrank/) and [Mika Braginsky](https://mikabr.io/) (Psychology Department, Stanford University).
+    center: ""
+    right: 
+      - icon: github
+        href: https://github.com/langcog/subsidy-map
 
 format:
   html:

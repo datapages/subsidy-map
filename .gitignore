@@ -1,3 +1,5 @@
 _site/
 /.quarto/
 .Renviron
+.Rproj.user
+.Rhistory

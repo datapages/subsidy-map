@@ -30,3 +30,7 @@ $badge-padding-x:                   .45em;
   font-style: italic;
   font-size: 0.9em;
 }
+
+.nav-footer-center, .nav-footer-right {
+  flex: unset;
+}
