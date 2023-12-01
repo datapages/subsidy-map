@@ -1,7 +1,6 @@
 ---
 title: "State Incentives Map"
 subtitle: Rebecca Lester, Stanford Graduate School of Business
-description: Click on a highlighted state to view its incentive programs and disclosure regimes.
 title-block-banner: "#15235b"
 title-block-banner-color: white
 ---
@@ -156,6 +155,8 @@ reg_state = regimes.map(obj => ({
 // only regimes for selected state
 reg_curr = reg_state.filter(d => d.curr_state)
 
+caption = htl.html`<div class="caption">Click on a highlighted state to view its incentive programs and disclosure regimes.<br>Click again on the selected state to view all regimes.</div>`
+
 // dot plot
 viewof timeline = Plot.plot({
   height: 500,
@@ -167,16 +168,18 @@ viewof timeline = Plot.plot({
       Plot.dodgeY({
               x: "year",
            fill: "curr_state",
+          title: (d) => [d.state, d.disclosure_law].join("\n"),
            sort: "curr_state",
-        reverse: true
+        reverse: true,
+            tip: true
         })
       ),
-   ]
+    ]
 })
 
 // place map and plot side by side
-html`<div style="display: flex; align-items: center;">
- <div style="flex-basis:50%"> ${viewof state}    </div>
+html`<div style="display: flex; align-items: center; margin-bottom: 2em;">
+ <div style="flex-basis:50%"> ${viewof state} ${caption} </div>
  <div style="flex-basis:50%"> ${viewof timeline} </div>
 </div>`
 ```
