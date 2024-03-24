@@ -9,7 +9,7 @@ title-block-banner-color: white
 library(dplyr)
 library(stringr)
 
-dataset <- redivis::user("stanford_templates")$dataset("subsidy_map")
+dataset <- redivis::user("datapages")$dataset("subsidy_map")
 regime_table <- dataset$table("state_disclosure_regimes")$to_tibble()
 
 regime_data <- regime_table |> rename_with(tolower) |> select(
